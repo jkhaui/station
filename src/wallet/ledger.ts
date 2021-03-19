@@ -8,11 +8,11 @@ import TerraApp, {
 } from '@terra-money/ledger-terra-js'
 import { signatureImport } from 'secp256k1'
 import semver from 'semver'
+import { Bip } from '../use-station/src'
 import { electron } from '../utils'
 import { isElectron } from '../utils/env'
 
 const INTERACTION_TIMEOUT = 120
-const REQUIRED_COSMOS_APP_VERSION = '2.12.0'
 const REQUIRED_APP_VERSION = '1.0.0'
 export const REQUIRED_ELECTRON_APP_VERSION = '1.1.0'
 
@@ -216,6 +216,10 @@ async function createTerraApp(): Promise<TerraApp | TerraElectronBridge> {
   return app
 }
 
+export const setBip = (bip: Bip) => {
+  path = [44, bip, 0, 0, 0]
+}
+
 const connect = async () => {
   if (app) {
     return
@@ -224,23 +228,18 @@ const connect = async () => {
   app = await createTerraApp()
   const { app_name: appName } = app.getInfo()
 
-  if (!['Terra', 'Cosmos'].includes(appName)) {
+  if (appName !== 'Terra') {
     throw new Error(`Open the Terra app in your Ledger.`)
   }
 
   const { major, minor, patch } = app.getVersion()
   const version = `${major}.${minor}.${patch}`
 
-  if (
-    (appName === 'Terra' && semver.lt(version, REQUIRED_APP_VERSION)) ||
-    (appName === 'Cosmos' && semver.lt(version, REQUIRED_COSMOS_APP_VERSION))
-  ) {
+  if (appName === 'Terra' && semver.lt(version, REQUIRED_APP_VERSION)) {
     throw new Error(
       'Outdated version: Please update Ledger Terra App to the latest version.'
     )
   }
-
-  path = [44, appName === 'Terra' ? 330 : 118, 0, 0, 0]
 }
 
 export const close = async () => {

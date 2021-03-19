@@ -5,7 +5,7 @@ import Icon from '../components/Icon'
 import Copy from '../components/Copy'
 import s from './ConfirmLedger.module.scss'
 
-const ConfirmLedger = ({ card, retry }: Props) => {
+const ConfirmLedger = ({ buttons, card, retry }: Props) => {
   const renderRetryMessage = (message: string) => {
     const [desc1, desc2, url] = message.split('\n')
 
@@ -32,7 +32,13 @@ const ConfirmLedger = ({ card, retry }: Props) => {
       </section>
 
       <footer className="text-center">
-        {!retry ? (
+        {buttons ? (
+          buttons.map(({ bip, desc, onClick }) => (
+            <button onClick={onClick} key={bip}>
+              {bip} - {desc}
+            </button>
+          ))
+        ) : !retry ? (
           <ProgressCircle />
         ) : (
           <>

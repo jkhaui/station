@@ -13,6 +13,7 @@ interface Settings {
   recentAddresses?: string[]
   hideSmallBalances?: boolean
   customNetworks?: CustomNetwork[]
+  bip?: 118 | 330
 }
 
 interface CustomNetwork {
