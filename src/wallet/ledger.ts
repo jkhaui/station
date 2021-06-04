@@ -93,7 +93,7 @@ const handleConnectError = (err: Error) => {
       `Couldn't connect to a Ledger device. Please use Ledger Live to upgrade the Ledger firmware to version ${REQUIRED_APP_VERSION} or later.`
     )
   }
-
+  console.log(message)
   /* istanbul ignore next: specific error rewrite */
   if (message.startsWith('Unable to claim interface')) {
     // apparently can't use it in several tabs in parallel
@@ -194,9 +194,15 @@ async function createTerraApp(): Promise<TerraApp | TerraElectronBridge> {
         INTERACTION_TIMEOUT * 1000
       ).catch(handleTransportError)
     } else {
-      // For other than Windows
-      const TransportWebUsb = require('@ledgerhq/hw-transport-webusb').default
-      transport = await TransportWebUsb.create(
+      // // For other than Windows
+      // const TransportWebUsb = require('@ledgerhq/hw-transport-webusb').default
+      // transport = await TransportWebUsb.create(
+      //   INTERACTION_TIMEOUT * 1000
+      // ).catch(handleTransportError)
+
+      // Trying with HID on macos
+      const TransportWebHid = require('@ledgerhq/hw-transport-webhid').default
+      transport = await TransportWebHid.create(
         INTERACTION_TIMEOUT * 1000
       ).catch(handleTransportError)
     }
